@@ -232,12 +232,12 @@ class FrameProcess {
     if (!validatedPixelRatio) {
       final screenshot = decodeImage(await screenshotFile.readAsBytes());
       if (screenshot.width != width) {
-        throw StateError(
-            'Generated image width did not match original image width. '
-            'Wrong device pixel ratio?'
-            ' was: ${screenshot.width}'
-            ' expected: $width'
-            ' ratio: $pixelRatio');
+        // throw StateError(
+        //     'Generated image width did not match original image width. '
+        //     'Wrong device pixel ratio?'
+        //     ' was: ${screenshot.width}'
+        //     ' expected: $width'
+        //     ' ratio: $pixelRatio');
       }
       validatedPixelRatio = true;
     }
