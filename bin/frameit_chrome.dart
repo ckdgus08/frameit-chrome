@@ -38,7 +38,7 @@ Future<void> main(List<String> args) async {
   parser.addOption(ARG_PIXEL_RATIO,
       valueHelp: '2',
       help: 'Device pixel to real pixel ratio.',
-      defaultsTo: '2');
+      defaultsTo: '1');
   final result = parser.parse(args);
 
   final baseDir = result[ARG_BASE_DIR] as String;
@@ -78,11 +78,17 @@ Future<void> runFrame(String baseDir, String framesDirPath, String chromeBinary,
     await outDir.delete(recursive: true);
   }
   final config = await FrameConfig.load(baseDir);
+
+  print('config:${config.toJson()[0].toString()}');
   await outDir.create(recursive: true);
   final framesDir = Directory(framesDirPath);
   checkArgument(framesDir.existsSync(),
       message: '$framesDir does not exist (download $FRAMES_REPO).');
   final framesProvider = await FramesProvider.create(framesDir);
+
+  for (final element in framesProvider.frames) {
+    print('deviceName:${element.name}');
+  }
 
   final tempDir = await Directory.systemTemp.createTemp('frameit_chrome');
   _logger.fine('Using ${tempDir.path}');

@@ -2,23 +2,96 @@
 
 # Rewriting file name patterns.
 rewrite:
-  - pattern: 'samsung-galaxy-s10-plus'
-    replace: 'samsungapps-samsung-galaxy-s10-plus'
+#  - pattern: 'samsung-galaxy-s10-plus'
+#    replace: 'samsungapps-samsung-galaxy-s10-plus'
+#    action: duplicate
+
+  - pattern: 'Nexus_4'
+    replace: 'Nexus_4'
+    action: duplicate
+
+  - pattern: 'iPhone 8 Plus'
     action: duplicate
 
 # Customizing images.
 images:
-  samsungapps-samsung-galaxy-s10-plus:
+  nexus-5x:
     cropHeight: 2600
-    device: 'samsung-galaxy-s10-plus'
-    previewLabel: 'Samsung App Store'
-    css: |
-      .scene {
-        background: rgb(34,193,195);
-        background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
-      }
-      .frame-bg-shadow {
-          filter: drop-shadow(25px 25px 15px blue);
-      }
+    device: 'Nexus 4'
+
+  iphone-8-plus:
+    cropHeight: 2600
+    device: 'iPhone 8 Plus'
+
+  iPad Pro (12.9-inch) (5th generation):
+    cropHeight: 2732
+    device: 'iPad Pro'
+#  samsungapps-samsung-galaxy-s10-plus:
+#    cropHeight: 2600
+#    device: 'samsung-galaxy-s10-plus'
+
+#    previewLabel: 'Samsung App Store'
+#    css: |
+#      .scene {
+#        background: rgb(34,193,195);
+#        background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
+#      }
+#      .frame-bg-shadow {
+#          filter: drop-shadow(25px 25px 15px blue);
+#      }
 
 
+
+##  Surface Pro X
+##  Samsung Galaxy S9
+##  Samsung Galaxy S8
+##  Samsung Galaxy S7
+##  Samsung Galaxy S5
+##  Samsung Galaxy S3
+##  Samsung Galaxy S10+
+##  Samsung Galaxy S10
+##  Samsung Galaxy Note 10+
+##  Samsung Galaxy Note 10
+##  Nexus 9
+##  Nexus 6P
+##  Nexus 4
+##  Motorola Moto G
+##  Motorola Moto E
+##  Macbook Pro 15
+##  Macbook Pro 13
+##  iPhone XS Max
+##  iPhone XS
+##  iPhone XR
+##  iPhone X
+##  iPhone SE
+##  iPhone 8 Plus
+##  iPhone 8
+##  iPhone 7 Plus
+##  iPhone 7
+##  iPhone 6s Plus
+##  iPhone 6s
+##  iPhone 5s
+##  iPhone 5c
+##  iPhone 12 Pro Pacific
+##  iPhone 12 Pro Max Pacific
+##  iPhone 12 Pro Max Graphite
+##  iPhone 12 Pro Max
+##  iPhone 12 Pro Graphite
+##  iPhone 12 Pro
+##  iPhone 12 Mini
+##  iPhone 12
+##  iPhone 11 Pro Max
+##  iPhone 11 Pro
+##  iPhone 11
+##  iPad Pro
+##  iPad Mini (2019)
+##  iPad Air (2019) 2
+##  iPad Air (2019)
+##  iPad 10.2
+##  Huawei P8
+##  Google Pixel Slate
+##  Google Pixel 5
+##  Google Pixel 4 XL
+##  Google Pixel 4
+##  Google Pixel 3 XL
+##  Google Pixel 3

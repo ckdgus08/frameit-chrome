@@ -32,13 +32,22 @@ class FrameProcess {
       return null;
     }
     final rewrite = config?.rewrite;
+
+    // for (var element in rewrite) {
+    //   print('element:${element.toJson()}');
+    //
+    // }
+    // print('name:$name');
+
     if (rewrite == null) {
       return [name];
     }
 
     final ret = <String>[];
     for (final r in rewrite) {
-      final hasMatch = r.patternRegExp.hasMatch(name);
+      print('r:${r.pattern} name:$name');
+      final hasMatch = name.contains(r.pattern);// r.pattern.contains(name);// r.patternRegExp.hasMatch(name);
+      print('hasMatch:$hasMatch');
       if (!hasMatch) {
         if (r.action == FileAction.include) {
           return ret;
@@ -87,7 +96,12 @@ class FrameProcess {
         continue;
       }
 
+
+
       for (final variant in name) {
+
+        print('dir:${dir} variant:${variant.toString()}');
+
         final result = await _processScreenshot(
           dir,
           outDir,
@@ -97,11 +111,14 @@ class FrameProcess {
           variant,
         );
 
+
+
         if (result != null) {
           createdScreenshots.add(result);
         }
       }
     }
+
 
     final imageHtml = createdScreenshots
         .groupBy<String, ProcessScreenshotResult>(
@@ -123,6 +140,8 @@ class FrameProcess {
     //   final src = path.relative(e.path, from: outDir.path);
     //   return '''<img src="$src" alt="" />''';
     // }).join('');
+
+
 
     await File(path.join(outDir.path, '_preview.html')).writeAsString('''
     <!--suppress ALL --><html lang="en"><head><title>present me</title>
@@ -176,12 +195,15 @@ class FrameProcess {
       return null;
     }
 
+
+
     final replacedTargetName =
         path.join(file.parent.path, '$screenshotName.png');
     final outFilePath = path.join(
         outDir.path, path.relative(replacedTargetName, from: srcDir.path));
     await File(outFilePath).parent.create(recursive: true);
 
+    print('screenshotName:$screenshotName imageConfig?.device:${imageConfig?.device}');
     final frame = framesProvider
         .frameForScreenshot(imageConfig?.device ?? screenshotName);
     _logger.fine(
@@ -213,11 +235,13 @@ class FrameProcess {
     final width = imageConfig?.cropWidth ?? image.width;
     final height = imageConfig?.cropHeight ?? image.height;
 
+
     final result = await Process.run(
         chromeBinary,
         [
           '--headless',
           '--no-sandbox',
+          '--disable-gpu',
           '--screenshot',
           '--hide-scrollbars',
           '--window-size=${width ~/ pixelRatio},${height ~/ pixelRatio}',

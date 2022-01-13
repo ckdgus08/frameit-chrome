@@ -12,11 +12,11 @@ String _prepareString(String str) =>
     str.replaceAll(RegExp(r'[_-]'), ' ').toLowerCase();
 
 class FramesProvider {
-  FramesProvider._(this._frames);
+  FramesProvider._(this.frames);
 
   static final offsetPattern = RegExp(r'^([+-]+\d+)([+-]+\d+)');
 
-  final List<Frame> _frames;
+  final List<Frame> frames;
 
   static MapEntry<String, String> _frameInfo(
       String deviceName, String fileBasename) {
@@ -90,7 +90,7 @@ class FramesProvider {
 
   Frame frameForScreenshot(String screenshotName) {
     final match = _prepareString(screenshotName);
-    return _frames.firstWhere((element) => match.contains(element.nameMatch),
+    return frames.firstWhere((element) => match.contains(element.nameMatch),
         orElse: () {
       _logger.finest('unable to find frame for $match');
       return null;
