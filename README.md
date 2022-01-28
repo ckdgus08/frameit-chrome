@@ -1,5 +1,10 @@
 # frameit_chrome
 
+
+### 사용법
+dart bin/frameit_chrome.dart --base-dir=example/metadata/android --frames-dir=$HOME/frameit-frames/latest
+
+
 Embed app store and play store screenshots in device frames. 
 Drop in replacement for fastlane frameit.
 
@@ -62,6 +67,8 @@ metadata/
     ```
  "password_generator" = "Great password generator!";
     ```
+
+
 
 ## Install `frameit_chrome`
 

@@ -62,6 +62,8 @@ class FramesProvider {
       if (f == null) {
         return null;
       }
+
+      print('f:$f');
       if (!f.existsSync()) {
         _logger.warning('Unable to find frame image for ${e.key}');
         return null;
@@ -90,8 +92,14 @@ class FramesProvider {
 
   Frame frameForScreenshot(String screenshotName) {
     final match = _prepareString(screenshotName);
-    return frames.firstWhere((element) => match.contains(element.nameMatch),
-        orElse: () {
+
+    for (var element in frames) {
+      print('여기서 기기 이름 목록 확인:${element.nameMatch} 사용하려는 스크린샷 이름:$match');
+    }
+
+    return frames.firstWhere((element) {
+      return match.contains(element.nameMatch);
+    }, orElse: () {
       _logger.finest('unable to find frame for $match');
       return null;
     });

@@ -204,10 +204,14 @@ class FrameProcess {
     await File(outFilePath).parent.create(recursive: true);
 
     print('screenshotName:$screenshotName imageConfig?.device:${imageConfig?.device}');
+
+    // 여기서 찾았네ㅇㅇ
     final frame = framesProvider
         .frameForScreenshot(imageConfig?.device ?? screenshotName);
     _logger.fine(
         'Rendering $screenshotName with title: $title ($keyword) and $frame');
+
+
 
     final image = decodeImage(await file.readAsBytes());
 
