@@ -64,7 +64,7 @@ Future<void> main(List<String> args) async {
   }
 }
 
-final localePattern = RegExp('^[a-z]{2}-[A-Z]{2}');
+final localePattern = RegExp('^[a-z]{2}');
 
 Future<void> runFrame(String baseDir, String framesDirPath, String chromeBinary,
     double pixelRatio) async {
