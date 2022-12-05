@@ -21,7 +21,7 @@ dependencies:
   # (Small) utility packages
   quiver: ">=2.0.0 <3.0.0"
   path: ^1.7.0
-  json_annotation: ^3.0.1
+  json_annotation: ^4.5.0
   archive: ^3.3.0
   supercharged_dart: ^1.2.0
 
