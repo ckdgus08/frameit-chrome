@@ -9,7 +9,7 @@ part of 'config.dart';
 FrameConfig _$FrameConfigFromJson(Map json) {
   return FrameConfig(
     rewrite: (json['rewrite'] as List)
-        ?.map((e) => e == null ? null : FileNameMapping.fromJson(e as Map))
+        .map((e) => e == null ? null : FileNameMapping.fromJson(e as Map))
         ?.toList(),
     images: (json['images'] as Map).map(
       (k, e) => MapEntry(
@@ -56,13 +56,13 @@ T _$enumDecode<T>(
 
   final value = enumValues.entries
       .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
+      .key;
 
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
+  // if (value == null && unknownValue == null) {
+  //   throw ArgumentError('`$source` is not one of the supported values: '
+  //       '${enumValues.values.join(', ')}');
+  // }
+  return value;
 }
 
 const _$FileActionEnumMap = {
