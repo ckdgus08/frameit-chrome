@@ -15,7 +15,7 @@ import 'package:quiver/check.dart';
 import 'package:yaml/yaml.dart';
 
 class FrameItChrome {
-  Future run({String baseDir, String framesDir}) async {
+  Future run({String baseDir}) async {
     await frameItChromeRun(
       baseDir: baseDir,
     );
