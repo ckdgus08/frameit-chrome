@@ -20,7 +20,7 @@ FrameConfig _$FrameConfigFromJson(Map json) {
                   (k, e) => MapEntry(k as String, e),
                 ))),
     ),
-  );
+  ) as List<FileNameMapping>;
 }
 
 Map<String, dynamic> _$FrameConfigToJson(FrameConfig instance) =>
