@@ -11,7 +11,7 @@ FrameConfig _$FrameConfigFromJson(Map json) {
     rewrite: (json['rewrite'] as List)
         ?.map((e) => e == null ? null : FileNameMapping.fromJson(e as Map))
         ?.toList(),
-    images: (json['images'] as Map)?.map(
+    images: (json['images'] as Map?)?.map(
       (k, e) => MapEntry(
           k as String,
           e == null

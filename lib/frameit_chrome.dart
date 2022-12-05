@@ -171,7 +171,7 @@ Future<void> runFrame(String baseDir, String framesDirPath, String chromeBinary,
 
     final titleStrings =
         await _parseStrings(File(path.join(localeDir.path, 'title.strings')));
-    final keywordStrings = await _parseStrings(
+    final Map<String, String> keywordStrings = await _parseStrings(
             File(path.join(localeDir.path, 'keyword.strings'))) ??
         {};
 
