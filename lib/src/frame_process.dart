@@ -13,21 +13,21 @@ final _logger = Logger('process_screenshots');
 
 class FrameProcess {
   FrameProcess({
-    required this.workingDir,
+    @required this.workingDir,
     this.config,
-    required this.chromeBinary,
-    required this.framesProvider,
-    required this.pixelRatio,
+    @required this.chromeBinary,
+    @required this.framesProvider,
+    this.pixelRatio,
   });
 
   final Directory workingDir;
-  final FrameConfig? config;
+  final FrameConfig config;
   final String chromeBinary;
   final FramesProvider framesProvider;
   final double pixelRatio;
   bool validatedPixelRatio = false;
 
-  List<String>? rewriteScreenshotName(String name) {
+  List<String> rewriteScreenshotName(String name) {
     if (name.contains('framed')) {
       return null;
     }
@@ -121,7 +121,7 @@ class FrameProcess {
 
 
     final imageHtml = createdScreenshots
-        .groupBy<String?, ProcessScreenshotResult>(
+        .groupBy<String, ProcessScreenshotResult>(
             (element) => element.config?.previewLabel)
         .entries
         .expand((e) {
@@ -174,11 +174,10 @@ class FrameProcess {
     <body></body></html>
     ''');
 
-    // return createdScreenshots;
-    return;
+    return createdScreenshots;
   }
 
-  Future<ProcessScreenshotResult?> _processScreenshot(
+  Future<ProcessScreenshotResult> _processScreenshot(
       Directory srcDir,
       Directory outDir,
       File file,
@@ -217,9 +216,9 @@ class FrameProcess {
     final image = decodeImage(await file.readAsBytes());
 
     final css = await _createCss(
-          frame!,
-          image!.width,
-          image!.height,
+          frame,
+          image.width,
+          image.height,
           screenshot: file,
           title: title,
           keyword: keyword,
@@ -260,7 +259,7 @@ class FrameProcess {
 
     if (!validatedPixelRatio) {
       final screenshot = decodeImage(await screenshotFile.readAsBytes());
-      if (screenshot!.width != width) {
+      if (screenshot.width != width) {
         // throw StateError(
         //     'Generated image width did not match original image width. '
         //     'Wrong device pixel ratio?'
@@ -282,14 +281,14 @@ class FrameProcess {
     //   exit(0);
     // }
 
-    return ProcessScreenshotResult(imageConfig!, outFilePath);
+    return ProcessScreenshotResult(imageConfig, outFilePath);
   }
 
   static String cssEscape(String str) {
     str = str.replaceAllMapped(RegExp('[^A-Za-z _-]+'), (match) {
       // str.replaceAllMapped(RegExp('[\n\t\'\"]'), (match) {
       final str = match.group(0);
-      return str!.runes.map((e) {
+      return str.runes.map((e) {
         return '\\${e.toRadixString(16).padLeft(6, '0')} ';
       }).join('');
     });
@@ -300,14 +299,14 @@ class FrameProcess {
     Frame frame,
     int targetWidth,
     int targetHeight, {
-    required File screenshot,
-    String? title,
-    String? keyword,
+    @required File screenshot,
+    String title,
+    String keyword,
   }) async {
     final ratio = pixelRatio;
     final image = decodeImage(await frame.image.readAsBytes());
-    final w = image!.width / ratio;
-    final h = image!.height / ratio;
+    final w = image.width / ratio;
+    final h = image.height / ratio;
     title ??= '';
     keyword ??= '';
     final separator = title.isNotEmpty && keyword.isNotEmpty ? ' ' : '';
@@ -340,7 +339,7 @@ class FrameProcess {
 ''';
   }
 
-  String? _findString(Map<String, String> strings, String filename) {
+  String _findString(Map<String, String> strings, String filename) {
     for (final entry in strings.entries) {
       if (filename.contains(entry.key)) {
         return entry.value;
@@ -358,8 +357,8 @@ class ProcessScreenshotResult implements Comparable<ProcessScreenshotResult> {
 
   @override
   int compareTo(ProcessScreenshotResult other) {
-    if (config.previewLabel != null) {
-      if (other.config.previewLabel != null) {
+    if (config?.previewLabel != null) {
+      if (other.config?.previewLabel != null) {
         return config.previewLabel.compareTo(other.config.previewLabel);
       }
       return 1;
