@@ -10,7 +10,7 @@ FrameConfig _$FrameConfigFromJson(Map json) {
   return FrameConfig(
     rewrite: (json['rewrite'] as List)
         .map((e) => e == null ? null : FileNameMapping.fromJson(e as Map))
-        ?.toList(),
+        .toList(),
     images: (json['images'] as Map).map(
       (k, e) => MapEntry(
           k as String,
@@ -55,7 +55,7 @@ T _$enumDecode<T>(
   }
 
   final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
+      .singleWhere((e) => e.value == source)
       .key;
 
   // if (value == null && unknownValue == null) {
