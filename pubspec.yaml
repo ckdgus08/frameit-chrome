@@ -13,10 +13,10 @@ environment:
 
 dependencies:
   meta: '>=1.0.0 <2.0.0'
-  args: ^1.6.0
-  yaml: ^2.2.1
-  logging: '>=0.11.3+2 <1.0.0'
-  logging_appenders: ^0.4.2+5
+  args: ^2.3.1
+  yaml: ^3.1.1
+  logging: ^1.1.0
+  logging_appenders: ^1.0.0
   image: ^3.2.2
   # (Small) utility packages
   quiver: ">=2.0.0 <3.0.0"
@@ -27,10 +27,10 @@ dependencies:
 
 dev_dependencies:
   pedantic: ^1.9.2
-  json_serializable: ^3.4.1
-  build_runner: ^1.10.2
-  builder_static_text: ^0.0.1+2
-  source_gen: ^0.9.6
-  build: ">=1.3.0 <2.0.0"
-  glob: ^1.2.0
+  json_serializable: ^6.5.4
+  build_runner: ^2.3.2
+  builder_static_text: ^0.1.0
+  source_gen: ^1.2.6
+  build: ^2.3.1
+  glob: ^2.1.1
   recase: ^3.0.0
