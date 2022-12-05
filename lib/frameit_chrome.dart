@@ -18,12 +18,9 @@ class FrameItChrome {
   Future run({String baseDir, String framesDir}) async {
     await frameItChromeRun(
       baseDir: baseDir,
-        framesDir: framesDir,
     );
   }
 }
-
-
 
 final _logger = Logger('frame');
 
@@ -45,7 +42,7 @@ Future<void> main(List<String> args) async {
       help: 'base dir of screenshots. (android/fastlane/metadata/android)');
   parser.addOption(ARG_FRAMES_DIR,
       help:
-      'dir with frames from $FRAMES_REPO (e.g. checkout/frameit-frames/latest)');
+          'dir with frames from $FRAMES_REPO (e.g. checkout/frameit-frames/latest)');
   parser.addOption(ARG_CHROME_BINARY,
       help: 'Path to chrome binary.', defaultsTo: chromeBinaryMac);
   parser.addOption(ARG_PIXEL_RATIO,
@@ -79,10 +76,10 @@ Future<void> main(List<String> args) async {
 
 Future frameItChromeRun({
   String baseDir,
-  String framesDir,
 }) async {
   String chromeBinary = chromeBinaryMac;
   double pixelRatio = 1;
+  String framesDir = "../deps/frameit-frames/latest";
 
   PrintAppender.setupLogging(stderrLevel: Level.WARNING);
 
@@ -173,9 +170,9 @@ Future<void> runFrame(String baseDir, String framesDirPath, String chromeBinary,
     }
 
     final titleStrings =
-    await _parseStrings(File(path.join(localeDir.path, 'title.strings')));
+        await _parseStrings(File(path.join(localeDir.path, 'title.strings')));
     final keywordStrings = await _parseStrings(
-        File(path.join(localeDir.path, 'keyword.strings'))) ??
+            File(path.join(localeDir.path, 'keyword.strings'))) ??
         {};
 
     if (titleStrings == null) {
@@ -187,7 +184,7 @@ Future<void> runFrame(String baseDir, String framesDirPath, String chromeBinary,
 
     final imagesDir = path.join(localeDir.path);
     final imagesOutDir =
-    path.join(outDir.path, path.relative(imagesDir, from: dir.path));
+        path.join(outDir.path, path.relative(imagesDir, from: dir.path));
     await frameProcess.processScreenshots(
       Directory(imagesDir),
       Directory(imagesOutDir),
@@ -208,7 +205,7 @@ Future<Map<String, String>> _parseStrings(File file) async {
   _logger.finest('reading ${file.path}');
   final tmp = await file.readAsString();
   final tmp2 =
-  tmp.replaceAll(RegExp(r';$', multiLine: true), '').replaceAll('=', ':');
+      tmp.replaceAll(RegExp(r';$', multiLine: true), '').replaceAll('=', ':');
   final result = loadYaml(tmp2) as Map;
   _logger.fine('got result: $result');
   if (result == null) {
