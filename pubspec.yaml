@@ -3,7 +3,7 @@ version: 1.0.0
 description: >-
   Embed app store and play store screenshots in device frames.
   Drop in replacement for fastlane frameit.
-homepage: https://github.com/authpass/frameit-chrome
+homepage: https://github.com/melodysdreamj/frameit-chrome
 
 executables:
   frameit_chrome: frameit_chrome
@@ -17,12 +17,12 @@ dependencies:
   yaml: ^2.2.1
   logging: '>=0.11.3+2 <1.0.0'
   logging_appenders: ^0.4.2+5
-  image: ^2.1.14
+  image: ^3.2.2
   # (Small) utility packages
   quiver: ">=2.0.0 <3.0.0"
   path: ^1.7.0
   json_annotation: ^3.0.1
-  archive: ^2.0.13
+  archive: ^3.3.0
   supercharged_dart: ^1.2.0
 
 dev_dependencies:
