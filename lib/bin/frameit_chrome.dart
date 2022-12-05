@@ -64,6 +64,53 @@ Future<void> main(List<String> args) async {
   }
 }
 
+Future frameItChromeRun({
+  String baseDir,
+  String framesDir,
+}) async {
+  String chromeBinary = chromeBinaryMac;
+  double pixelRatio = 1;
+
+  PrintAppender.setupLogging(stderrLevel: Level.WARNING);
+
+  // final parser = ArgParser();
+  // parser.addOption(ARG_BASE_DIR,
+  //     help: 'base dir of screenshots. (android/fastlane/metadata/android)');
+  // parser.addOption(ARG_FRAMES_DIR,
+  //     help:
+  //     'dir with frames from $FRAMES_REPO (e.g. checkout/frameit-frames/latest)');
+  // parser.addOption(ARG_CHROME_BINARY,
+  //     help: 'Path to chrome binary.', defaultsTo: chromeBinaryMac);
+  // parser.addOption(ARG_PIXEL_RATIO,
+  //     valueHelp: '2',
+  //     help: 'Device pixel to real pixel ratio.',
+  //     defaultsTo: '1');
+  // final result = parser.parse(args);
+
+  // final baseDir = result[ARG_BASE_DIR] as String;
+  // final framesDir = result[ARG_FRAMES_DIR] as String;
+  // final chromeBinary = result[ARG_CHROME_BINARY] as String;
+  // final pixelRatio = double.tryParse(result[ARG_PIXEL_RATIO].toString());
+  if (baseDir == null ||
+      framesDir == null ||
+      chromeBinary == null ||
+      pixelRatio == null) {
+    // print(parser.usage);
+    print("필수파일이 없음으로 종료합니다.");
+    exit(1);
+  }
+  if (!File(chromeBinary).existsSync()) {
+    _logger.severe('Unable to find chrome at $chromeBinary');
+    // print(parser.usage);
+    exit(1);
+  }
+  try {
+    await runFrame(baseDir, framesDir, chromeBinary, pixelRatio);
+  } catch (e, stackTrace) {
+    _logger.severe('Error while creating frames.', e, stackTrace);
+  }
+}
+
 final localePattern = RegExp('^[a-z]{2}');
 
 Future<void> runFrame(String baseDir, String framesDirPath, String chromeBinary,
@@ -143,7 +190,7 @@ Future<void> runFrame(String baseDir, String framesDirPath, String chromeBinary,
 Future<Map<String, String>> _parseStrings(File file) async {
   final strings = <String, String>{};
   if (!file.existsSync()) {
-    return null;
+    return {};
   }
   _logger.finest('reading ${file.path}');
   final tmp = await file.readAsString();
@@ -152,7 +199,7 @@ Future<Map<String, String>> _parseStrings(File file) async {
   final result = loadYaml(tmp2) as Map;
   _logger.fine('got result: $result');
   if (result == null) {
-    return null;
+    return {};
   }
   for (final entry in result.entries) {
     strings[entry.key as String] = entry.value as String;
