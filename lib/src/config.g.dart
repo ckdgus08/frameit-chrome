@@ -16,7 +16,7 @@ FrameConfig _$FrameConfigFromJson(Map json) {
           k as String,
           e == null
               ? null
-              : FrameImage.fromJson((e as Map)?.map(
+              : FrameImage.fromJson((e as Map).map(
                   (k, e) => MapEntry(k as String, e),
                 ))),
     ),
@@ -47,7 +47,7 @@ Map<String, dynamic> _$FileNameMappingToJson(FileNameMapping instance) =>
 T _$enumDecode<T>(
   Map<T, dynamic> enumValues,
   dynamic source, {
-  T unknownValue,
+  required T unknownValue,
 }) {
   if (source == null) {
     throw ArgumentError('A value must be provided. Supported values: '
