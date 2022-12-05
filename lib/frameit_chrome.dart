@@ -15,7 +15,7 @@ import 'package:quiver/check.dart';
 import 'package:yaml/yaml.dart';
 
 class FrameItChrome {
-  Future run({String baseDir}) async {
+  Future run({required String baseDir}) async {
     await frameItChromeRun(
       baseDir: baseDir,
     );
@@ -75,7 +75,7 @@ Future<void> main(List<String> args) async {
 }
 
 Future frameItChromeRun({
-  String baseDir,
+  required String baseDir,
 }) async {
   String chromeBinary = chromeBinaryMac;
   double pixelRatio = 1;
@@ -136,7 +136,7 @@ Future<void> runFrame(String baseDir, String framesDirPath, String chromeBinary,
   }
   final config = await FrameConfig.load(baseDir);
 
-  print('config:${config.toJson()[0].toString()}');
+  print('config:${config?.toJson()[0].toString()}');
   await outDir.create(recursive: true);
   final framesDir = Directory(framesDirPath);
   checkArgument(framesDir.existsSync(),
@@ -144,7 +144,7 @@ Future<void> runFrame(String baseDir, String framesDirPath, String chromeBinary,
   final framesProvider = await FramesProvider.create(framesDir);
 
   for (final element in framesProvider.frames) {
-    print('deviceName:${element.name}');
+    print('deviceName:${element!.name}');
   }
 
   final tempDir = await Directory.systemTemp.createTemp('frameit_chrome');

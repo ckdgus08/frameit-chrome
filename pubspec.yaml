@@ -9,7 +9,7 @@ executables:
   frameit_chrome: frameit_chrome
 
 environment:
-  sdk: ">=2.8.0 <3.0.0"
+  sdk: '>=2.18.4 <3.0.0'
 
 dependencies:
   meta: '>=1.0.0 <2.0.0'
@@ -19,11 +19,11 @@ dependencies:
   logging_appenders: ^1.0.0
   image: ^3.2.2
   # (Small) utility packages
-  quiver: ">=2.0.0 <3.0.0"
+  quiver: ^3.1.0
   path: ^1.7.0
   json_annotation: ^4.5.0
   archive: ^3.3.0
-  supercharged_dart: ^1.2.0
+  supercharged_dart: ^2.1.1
 
 dev_dependencies:
   pedantic: ^1.9.2

@@ -16,9 +16,9 @@ class FramesProvider {
 
   static final offsetPattern = RegExp(r'^([+-]+\d+)([+-]+\d+)');
 
-  final List<Frame> frames;
+  final List<Frame?> frames;
 
-  static MapEntry<String, String> _frameInfo(
+  static MapEntry<String, String?>? _frameInfo(
       String deviceName, String fileBasename) {
     if (fileBasename.startsWith('Apple ') && !deviceName.startsWith('Apple ')) {
       fileBasename = fileBasename.replaceAll('Apple ', '');
@@ -52,9 +52,9 @@ class FramesProvider {
         (offsetJson['portrait'] as Map<String, Object>).entries.map((e) {
       final map = e.value as Map<String, Object>;
 
-      final f = frameImages.firstWhere(
+      final f = frameImages.cast<File?>().firstWhere(
           (frame) =>
-              _frameInfo(e.key, path.basenameWithoutExtension(frame.path)) !=
+              _frameInfo(e.key, path.basenameWithoutExtension(frame!.path)) !=
               null, orElse: () {
         _logger.warning('Cannot find ${e.key} image.');
         return null;
@@ -74,8 +74,8 @@ class FramesProvider {
         throw StateError('Invalid offset: $offsetString');
       }
       // _logger.info('matches:$offsetMatch ${offsetMatch.groupCount}');
-      final offsetX = int.parse(offsetMatch.group(1));
-      final offsetY = int.parse(offsetMatch.group(2));
+      final offsetX = int.parse(offsetMatch.group(1)!);
+      final offsetY = int.parse(offsetMatch.group(2)!);
 
       return Frame(
           name: e.key,
@@ -85,20 +85,20 @@ class FramesProvider {
           width: int.parse(map['width'].toString()),
           image: f);
     });
-    final frames = offsets.where((element) => element != null).toList();
+    final frames = offsets.where((element) => element != null).cast<Frame>().toList();
     frames.sort((a, b) => -a.nameMatch.compareTo(b.nameMatch));
     return FramesProvider._(frames);
   }
 
-  Frame frameForScreenshot(String screenshotName) {
+  Frame? frameForScreenshot(String screenshotName) {
     final match = _prepareString(screenshotName);
 
     for (var element in frames) {
-      print('여기서 기기 이름 목록 확인:${element.nameMatch} 사용하려는 스크린샷 이름:$match');
+      print('여기서 기기 이름 목록 확인:${element!.nameMatch} 사용하려는 스크린샷 이름:$match');
     }
 
     return frames.firstWhere((element) {
-      return match.contains(element.nameMatch);
+      return match.contains(element!.nameMatch);
     }, orElse: () {
       _logger.finest('unable to find frame for $match');
       return null;
@@ -115,12 +115,12 @@ enum Orientation {
 
 class Frame {
   Frame({
-    @required this.name,
-    @required this.orientation,
-    @required this.offsetX,
-    @required this.offsetY,
-    @required this.width,
-    @required this.image,
+    required this.name,
+    required this.orientation,
+    required this.offsetX,
+    required this.offsetY,
+    required this.width,
+    required this.image,
   }) : nameMatch = _prepareString(name);
 
   final String name;
