@@ -32,17 +32,10 @@ class FrameProcess {
     }
     final rewrite = config.rewrite;
 
-    for (final element in rewrite) {
-      print('element:${element.toJson()}');
-    }
-    print('name:$name');
-
     final ret = <String>[];
     for (final r in rewrite) {
-      // print('r:${r.pattern} name:$name');
       final hasMatch = name.contains(r
           .pattern); // r.pattern.contains(name);// r.patternRegExp.hasMatch(name);
-      // print('hasMatch:$hasMatch');
       if (!hasMatch) {
         if (r.action == FileAction.include) {
           return ret;
@@ -64,7 +57,6 @@ class FrameProcess {
       }
     }
     ret.add(name);
-    // return name.replaceAll('samsung-galaxy-s10-plus', 'samsung-galaxy-s10');
     return ret;
   }
 
@@ -77,7 +69,7 @@ class FrameProcess {
     checkArgument(dir.existsSync(), message: 'Dir does not exist $dir');
     final createdScreenshots = <ProcessScreenshotResult>[];
     await for (final file in dir.list(recursive: true)) {
-      if (file is! File) {
+      if (file is! File || !file.path.contains('af')) {
         continue;
       }
 
@@ -85,7 +77,8 @@ class FrameProcess {
       rewriteScreenshotName(path.basenameWithoutExtension(file.path));
 
       for (final variant in name) {
-        print('dir: => ${dir} variant:${variant.toString()}');
+        print('name => ${name}');
+        print('dir: => ${dir}, variant => ${variant.toString()}');
 
         final result = await _processScreenshot(
           dir,
@@ -121,7 +114,7 @@ class FrameProcess {
     //   return '''<img src="$src" alt="" />''';
     // }).join('');
 
-    // print("하이루:${outDir.path}");
+    print("하이루:${outDir.path}");
     await File(path.join(outDir.path, '_preview.html')).create(recursive: true);
 
     await File(path.join(outDir.path, '_preview.html')).writeAsString('''
@@ -155,7 +148,7 @@ class FrameProcess {
     <body></body></html>
     ''');
 
-    // print("하이루2");
+    print("하이루2");
   }
 
   Future<ProcessScreenshotResult> _processScreenshot(
@@ -200,7 +193,7 @@ class FrameProcess {
       title: title,
       keyword: keyword,
     ) +
-        '\n${imageConfig.css ?? ''}\n';
+        '\n${imageConfig.css}\n';
     final indexHtml = File(path.join(workingDir.path, 'index.html'));
     final cssFile = File(path.join(workingDir.path, 'index_override.css'));
     final screenshotFile = File(path.join(workingDir.path, 'screenshot.png'));
@@ -290,8 +283,6 @@ class FrameProcess {
     }
     final w = image.width / ratio;
     final h = image.height / ratio;
-    title ??= '';
-    keyword ??= '';
     final separator = title.isNotEmpty && keyword.isNotEmpty ? ' ' : '';
     return '''
 :root {

@@ -33,7 +33,7 @@ class FramesProvider {
         return MapEntry(deviceName, '');
       }
     }
-    return MapEntry(deviceName, '');
+    return MapEntry('', '');
   }
 
   static Future<FramesProvider> create(Directory baseDir) async {
@@ -46,46 +46,50 @@ class FramesProvider {
 
     final offsetsFile = path.join(baseDir.path, 'offsets.json');
     final offsetJson = json.decode(await File(offsetsFile).readAsString())
-    as Map<String, Object>;
-    final offsets =
-    (offsetJson['portrait'] as Map<String, Object>).entries.map((e) {
-      final map = e.value as Map<String, Object>;
+        as Map<String, dynamic>;
 
-      final f = frameImages.firstWhere(orElse: () {
-        throw Exception('Cannot find ${e.key} image.');
-      },
-              (frame) =>
-          _frameInfo(e.key, path.basenameWithoutExtension(frame.path))
-              .value
-              .isNotEmpty);
+    final frames = <Frame>[];
 
-      print('f:$f');
-      if (!f.existsSync()) {
-        _logger.warning('Unable to find frame image for ${e.key}');
-        return null;
-      }
-      final offsetString = map['offset'] as String;
+    for (var e in (offsetJson['portrait'] as Map<String, dynamic>).entries) {
+      String deviceName = e.key;
+      final offsetString = e.value['offset'] as String;
       final offsetMatch = offsetPattern.firstMatch(offsetString);
+
       if (offsetMatch == null) {
-        throw StateError('Invalid offset: $offsetString');
+        _logger.warning(
+            'Invalid offset format => $offsetString, valid format => ${offsetPattern.toString()}');
+        continue;
       }
-      _logger.info('offsetMatch => ${offsetMatch}');
-      // _logger.info('matches:$offsetMatch ${offsetMatch.groupCount}');
+
       final offsetX = int.parse(offsetMatch.group(1)!);
       final offsetY = int.parse(offsetMatch.group(2)!);
+      final width = int.parse(e.value['width'].toString());
 
-      return Frame(
-          name: e.key,
-          orientation: Orientation.portrait,
-          offsetX: offsetX,
-          offsetY: offsetY,
-          width: int.parse(map['width'].toString()),
-          image: f);
-    });
-    final frames = offsets.where((element) => element != null).toList();
-    frames.sort((a, b) => -a!.nameMatch.compareTo(b!.nameMatch));
+      final image = frameImages
+          .where((frame) =>
+              _frameInfo(deviceName, path.basenameWithoutExtension(frame.path))
+                  .key
+                  .isNotEmpty)
+          .firstOrNull;
 
-    return FramesProvider._(frames as List<Frame>);
+      if (image == null) {
+        _logger.warning('No matching image found for device: $deviceName');
+        continue;
+      }
+
+      frames.add(Frame(
+        name: deviceName,
+        orientation: Orientation.portrait,
+        offsetX: offsetX,
+        offsetY: offsetY,
+        width: width,
+        image: image,
+      ));
+    }
+
+    frames.sort((a, b) => -a.nameMatch.compareTo(b.nameMatch));
+
+    return FramesProvider._(frames);
   }
 
   Frame frameForScreenshot(String screenshotName) {

@@ -25,7 +25,7 @@ class FrameConfig {
   static Future<FrameConfig> load(String baseDir) async {
     final configFile = File(path.join(baseDir, FrameConfig.FILE_NAME));
     if (!configFile.existsSync()) {
-      throw Exception("[ERROR] configFile.existsSync()");
+      return FrameConfig(rewrite: [], images: {});
     }
     return FrameConfig.fromJson(
         loadYaml(await configFile.readAsString()) as Map);
