@@ -9,9 +9,10 @@ part 'config.g.dart';
 @JsonSerializable(anyMap: true)
 class FrameConfig {
   FrameConfig({
-    @JsonKey(nullable: true) this.rewrite,
-    @JsonKey(nullable: true) this.images,
+    required this.rewrite,
+    required this.images,
   });
+
   factory FrameConfig.fromJson(Map json) => _$FrameConfigFromJson(json);
 
   static const FILE_NAME = 'frameit.yaml';
@@ -24,7 +25,7 @@ class FrameConfig {
   static Future<FrameConfig> load(String baseDir) async {
     final configFile = File(path.join(baseDir, FrameConfig.FILE_NAME));
     if (!configFile.existsSync()) {
-      return null;
+      throw Exception("[ERROR] configFile.existsSync()");
     }
     return FrameConfig.fromJson(
         loadYaml(await configFile.readAsString()) as Map);
@@ -32,9 +33,8 @@ class FrameConfig {
 
   FrameImage findImageConfig(String screenshotName) {
     return images.entries
-        .firstWhere((element) => screenshotName.contains(element.key),
-            orElse: () => null)
-        ?.value;
+        .firstWhere((element) => screenshotName.contains(element.key))
+        .value;
   }
 }
 
@@ -48,36 +48,44 @@ enum FileAction {
 @JsonSerializable(nullable: false, anyMap: true)
 class FileNameMapping {
   FileNameMapping({
-    this.pattern,
-    this.replace,
+    required this.pattern,
+    required this.replace,
     // @JsonKey(defaultValue: false) this.duplicate,
     // @JsonKey(defaultValue: false) this.exclude,
-    @JsonKey(defaultValue: FileAction.rename) this.action,
-  });
+    @JsonKey(defaultValue: FileAction.rename) required this.action,
+  }) {
+    _patternRegExp = RegExp('');
+  }
+
   factory FileNameMapping.fromJson(Map json) => _$FileNameMappingFromJson(json);
+
   Map<String, dynamic> toJson() => _$FileNameMappingToJson(this);
 
   final String pattern;
   final String replace;
+
   // final bool duplicate;
   // final bool exclude;
   final FileAction action;
 
-  RegExp _patternRegExp;
-  RegExp get patternRegExp => _patternRegExp ??= RegExp(pattern);
+  late RegExp _patternRegExp;
+
+  RegExp get patternRegExp => _patternRegExp;
 }
 
-@JsonSerializable(nullable: true, anyMap: true)
+@JsonSerializable(anyMap: true)
 class FrameImage {
   FrameImage({
-    this.cropWidth,
-    this.cropHeight,
-    this.device,
-    this.previewLabel,
-    this.css,
+    required this.cropWidth,
+    required this.cropHeight,
+    required this.device,
+    required this.previewLabel,
+    required this.css,
   });
+
   factory FrameImage.fromJson(Map<String, dynamic> json) =>
       _$FrameImageFromJson(json);
+
   Map<String, dynamic> toJson() => _$FrameImageToJson(this);
 
   /// Crop with of the final image. (null for using the original width)

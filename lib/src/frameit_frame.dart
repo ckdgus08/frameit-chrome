@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:frameit_chrome/src/frame_colors.dart';
-import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path;
 
+import 'package:frameit_chrome/src/frame_colors.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' as path;
 
 final _logger = Logger('frameit_frame');
 
@@ -31,37 +30,34 @@ class FramesProvider {
           return MapEntry(deviceName, color);
         }
       } else {
-        return MapEntry(deviceName, null);
+        return MapEntry(deviceName, '');
       }
     }
-    return null;
+    return MapEntry(deviceName, '');
   }
 
   static Future<FramesProvider> create(Directory baseDir) async {
     final frameImages = (await baseDir
-            .list()
-            .where((event) => event.path.endsWith('png'))
-            .toList())
+        .list()
+        .where((event) => event.path.endsWith('png'))
+        .toList())
         .whereType<File>()
         .toList();
 
     final offsetsFile = path.join(baseDir.path, 'offsets.json');
     final offsetJson = json.decode(await File(offsetsFile).readAsString())
-        as Map<String, Object>;
+    as Map<String, Object>;
     final offsets =
-        (offsetJson['portrait'] as Map<String, Object>).entries.map((e) {
+    (offsetJson['portrait'] as Map<String, Object>).entries.map((e) {
       final map = e.value as Map<String, Object>;
 
-      final f = frameImages.firstWhere(
-          (frame) =>
-              _frameInfo(e.key, path.basenameWithoutExtension(frame.path)) !=
-              null, orElse: () {
-        _logger.warning('Cannot find ${e.key} image.');
-        return null;
-      });
-      if (f == null) {
-        return null;
-      }
+      final f = frameImages.firstWhere(orElse: () {
+        throw Exception('Cannot find ${e.key} image.');
+      },
+              (frame) =>
+          _frameInfo(e.key, path.basenameWithoutExtension(frame.path))
+              .value
+              .isNotEmpty);
 
       print('f:$f');
       if (!f.existsSync()) {
@@ -73,9 +69,10 @@ class FramesProvider {
       if (offsetMatch == null) {
         throw StateError('Invalid offset: $offsetString');
       }
+      _logger.info('offsetMatch => ${offsetMatch}');
       // _logger.info('matches:$offsetMatch ${offsetMatch.groupCount}');
-      final offsetX = int.parse(offsetMatch.group(1));
-      final offsetY = int.parse(offsetMatch.group(2));
+      final offsetX = int.parse(offsetMatch.group(1)!);
+      final offsetY = int.parse(offsetMatch.group(2)!);
 
       return Frame(
           name: e.key,
@@ -86,22 +83,22 @@ class FramesProvider {
           image: f);
     });
     final frames = offsets.where((element) => element != null).toList();
-    frames.sort((a, b) => -a.nameMatch.compareTo(b.nameMatch));
-    return FramesProvider._(frames);
+    frames.sort((a, b) => -a!.nameMatch.compareTo(b!.nameMatch));
+
+    return FramesProvider._(frames as List<Frame>);
   }
 
   Frame frameForScreenshot(String screenshotName) {
     final match = _prepareString(screenshotName);
 
-    for (var element in frames) {
+    for (final element in frames) {
       print('여기서 기기 이름 목록 확인:${element.nameMatch} 사용하려는 스크린샷 이름:$match');
     }
 
     return frames.firstWhere((element) {
       return match.contains(element.nameMatch);
     }, orElse: () {
-      _logger.finest('unable to find frame for $match');
-      return null;
+      throw Exception('unable to find frame for $match');
     });
   }
 
@@ -115,12 +112,12 @@ enum Orientation {
 
 class Frame {
   Frame({
-    @required this.name,
-    @required this.orientation,
-    @required this.offsetX,
-    @required this.offsetY,
-    @required this.width,
-    @required this.image,
+    required this.name,
+    required this.orientation,
+    required this.offsetX,
+    required this.offsetY,
+    required this.width,
+    required this.image,
   }) : nameMatch = _prepareString(name);
 
   final String name;

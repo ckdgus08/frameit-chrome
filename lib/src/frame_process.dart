@@ -4,7 +4,6 @@ import 'package:frameit_chrome/src/config.dart';
 import 'package:frameit_chrome/src/frameit_frame.dart';
 import 'package:image/image.dart';
 import 'package:logging/logging.dart';
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:quiver/check.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
@@ -13,11 +12,11 @@ final _logger = Logger('process_screenshots');
 
 class FrameProcess {
   FrameProcess({
-    @required this.workingDir,
-    this.config,
-    @required this.chromeBinary,
-    @required this.framesProvider,
-    this.pixelRatio,
+    required this.workingDir,
+    required this.config,
+    required this.chromeBinary,
+    required this.framesProvider,
+    required this.pixelRatio,
   });
 
   final Directory workingDir;
@@ -29,25 +28,21 @@ class FrameProcess {
 
   List<String> rewriteScreenshotName(String name) {
     if (name.contains('framed')) {
-      return null;
+      return [];
     }
-    final rewrite = config?.rewrite;
+    final rewrite = config.rewrite;
 
-    // for (var element in rewrite) {
-    //   print('element:${element.toJson()}');
-    //
-    // }
-    // print('name:$name');
-
-    if (rewrite == null) {
-      return [name];
+    for (final element in rewrite) {
+      print('element:${element.toJson()}');
     }
+    print('name:$name');
 
     final ret = <String>[];
     for (final r in rewrite) {
-      print('r:${r.pattern} name:$name');
-      final hasMatch = name.contains(r.pattern);// r.pattern.contains(name);// r.patternRegExp.hasMatch(name);
-      print('hasMatch:$hasMatch');
+      // print('r:${r.pattern} name:$name');
+      final hasMatch = name.contains(r
+          .pattern); // r.pattern.contains(name);// r.patternRegExp.hasMatch(name);
+      // print('hasMatch:$hasMatch');
       if (!hasMatch) {
         if (r.action == FileAction.include) {
           return ret;
@@ -55,9 +50,7 @@ class FrameProcess {
         continue;
       }
       var newName = name;
-      if (r.replace != null) {
-        newName = name.replaceAll(r.patternRegExp, r.replace);
-      }
+      newName = name.replaceAll(r.patternRegExp, r.replace);
       switch (r.action) {
         case FileAction.duplicate:
           ret.add(newName);
@@ -65,7 +58,7 @@ class FrameProcess {
         case FileAction.rename:
           return ret..add(newName);
         case FileAction.exclude:
-          return null;
+          return [];
         case FileAction.include:
           break;
       }
@@ -76,31 +69,23 @@ class FrameProcess {
   }
 
   Future<void> processScreenshots(
-    Directory dir,
-    Directory outDir,
-    Map<String, String> titleStrings,
-    Map<String, String> keywordStrings,
-  ) async {
+      Directory dir,
+      Directory outDir,
+      Map<String, String> titleStrings,
+      Map<String, String> keywordStrings,
+      ) async {
     checkArgument(dir.existsSync(), message: 'Dir does not exist $dir');
-    _logger.info('Processing images in $dir');
     final createdScreenshots = <ProcessScreenshotResult>[];
-    await for (final fileEntity in dir.list(recursive: true)) {
-      if (fileEntity is! File) {
+    await for (final file in dir.list(recursive: true)) {
+      if (file is! File) {
         continue;
       }
-      final file = fileEntity as File;
 
       final name =
-          rewriteScreenshotName(path.basenameWithoutExtension(file.path));
-      if (name == null) {
-        continue;
-      }
-
-
+      rewriteScreenshotName(path.basenameWithoutExtension(file.path));
 
       for (final variant in name) {
-
-        print('dir:${dir} variant:${variant.toString()}');
+        print('dir: => ${dir} variant:${variant.toString()}');
 
         final result = await _processScreenshot(
           dir,
@@ -111,23 +96,18 @@ class FrameProcess {
           variant,
         );
 
-
-
-        if (result != null) {
-          createdScreenshots.add(result);
-        }
+        createdScreenshots.add(result);
       }
     }
 
-
     final imageHtml = createdScreenshots
         .groupBy<String, ProcessScreenshotResult>(
-            (element) => element.config?.previewLabel)
+            (element) => element.config.previewLabel)
         .entries
         .expand((e) {
       e.value.sort((a, b) => a.compareTo(b));
       return [
-        '<h1>${e.key ?? 'Framed Screenshots'}</h2>',
+        '<h1>${e.key}</h2>',
         ...e.value.map((e) {
           final src = path.relative(e.path, from: outDir.path);
           return '''<img src="$src" alt="${path.basename(e.path)}" />''';
@@ -141,7 +121,8 @@ class FrameProcess {
     //   return '''<img src="$src" alt="" />''';
     // }).join('');
 
-
+    // print("하이루:${outDir.path}");
+    await File(path.join(outDir.path, '_preview.html')).create(recursive: true);
 
     await File(path.join(outDir.path, '_preview.html')).writeAsString('''
     <!--suppress ALL --><html lang="en"><head><title>present me</title>
@@ -174,7 +155,7 @@ class FrameProcess {
     <body></body></html>
     ''');
 
-    return createdScreenshots;
+    // print("하이루2");
   }
 
   Future<ProcessScreenshotResult> _processScreenshot(
@@ -188,42 +169,38 @@ class FrameProcess {
     //     '{path.basenameWithoutExtension(file.path)}_framed.png');
 
     // find title and keyword
-    final imageConfig = config?.findImageConfig(screenshotName);
+    final imageConfig = config.findImageConfig(screenshotName);
     final title = _findString(titleStrings, screenshotName);
     final keyword = _findString(keywordStrings, screenshotName);
-    if (title == null) {
-      return null;
-    }
-
-
 
     final replacedTargetName =
-        path.join(file.parent.path, '$screenshotName.png');
+    path.join(file.parent.path, '$screenshotName.png');
     final outFilePath = path.join(
         outDir.path, path.relative(replacedTargetName, from: srcDir.path));
     await File(outFilePath).parent.create(recursive: true);
 
-    print('screenshotName:$screenshotName imageConfig?.device:${imageConfig?.device}');
+    print(
+        'screenshotName:$screenshotName imageConfig?.device:${imageConfig.device}');
 
     // 여기서 찾았네ㅇㅇ
-    final frame = framesProvider
-        .frameForScreenshot(imageConfig?.device ?? screenshotName);
+    final frame = framesProvider.frameForScreenshot(imageConfig.device);
     _logger.fine(
         'Rendering $screenshotName with title: $title ($keyword) and $frame');
 
-
-
     final image = decodeImage(await file.readAsBytes());
+    if (image == null) {
+      throw Exception('[ERROR] 이미지 null');
+    }
 
     final css = await _createCss(
-          frame,
-          image.width,
-          image.height,
-          screenshot: file,
-          title: title,
-          keyword: keyword,
-        ) +
-        '\n${imageConfig?.css ?? ''}\n';
+      frame,
+      image.width,
+      image.height,
+      screenshot: file,
+      title: title,
+      keyword: keyword,
+    ) +
+        '\n${imageConfig.css ?? ''}\n';
     final indexHtml = File(path.join(workingDir.path, 'index.html'));
     final cssFile = File(path.join(workingDir.path, 'index_override.css'));
     final screenshotFile = File(path.join(workingDir.path, 'screenshot.png'));
@@ -236,9 +213,8 @@ class FrameProcess {
     await cssFile.writeAsString(css);
     final runStopwatch = Stopwatch()..start();
 
-    final width = imageConfig?.cropWidth ?? image.width;
-    final height = imageConfig?.cropHeight ?? image.height;
-
+    final width = imageConfig.cropWidth;
+    final height = imageConfig.cropHeight;
 
     final result = await Process.run(
         chromeBinary,
@@ -259,6 +235,9 @@ class FrameProcess {
 
     if (!validatedPixelRatio) {
       final screenshot = decodeImage(await screenshotFile.readAsBytes());
+      if (screenshot == null) {
+        throw Exception('[ERROR] 이미지 null');
+      }
       if (screenshot.width != width) {
         // throw StateError(
         //     'Generated image width did not match original image width. '
@@ -288,23 +267,27 @@ class FrameProcess {
     str = str.replaceAllMapped(RegExp('[^A-Za-z _-]+'), (match) {
       // str.replaceAllMapped(RegExp('[\n\t\'\"]'), (match) {
       final str = match.group(0);
-      return str.runes.map((e) {
+      return str?.runes.map((e) {
         return '\\${e.toRadixString(16).padLeft(6, '0')} ';
-      }).join('');
+      }).join('') ??
+          '';
     });
     return '"$str"';
   }
 
   Future<String> _createCss(
-    Frame frame,
-    int targetWidth,
-    int targetHeight, {
-    @required File screenshot,
-    String title,
-    String keyword,
-  }) async {
+      Frame frame,
+      int targetWidth,
+      int targetHeight, {
+        required File screenshot,
+        required String title,
+        required String keyword,
+      }) async {
     final ratio = pixelRatio;
     final image = decodeImage(await frame.image.readAsBytes());
+    if (image == null) {
+      throw Exception('[ERROR] 이미지 null');
+    }
     final w = image.width / ratio;
     final h = image.height / ratio;
     title ??= '';
@@ -345,7 +328,7 @@ class FrameProcess {
         return entry.value;
       }
     }
-    return null;
+    return '';
   }
 }
 
@@ -357,12 +340,6 @@ class ProcessScreenshotResult implements Comparable<ProcessScreenshotResult> {
 
   @override
   int compareTo(ProcessScreenshotResult other) {
-    if (config?.previewLabel != null) {
-      if (other.config?.previewLabel != null) {
-        return config.previewLabel.compareTo(other.config.previewLabel);
-      }
-      return 1;
-    }
-    return path.compareTo(other.path);
+    return config.previewLabel.compareTo(other.config.previewLabel);
   }
 }

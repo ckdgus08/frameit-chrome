@@ -26,11 +26,11 @@ dependencies:
   supercharged_dart:
 
 dev_dependencies:
-  pedantic:
-  json_serializable:
-  build_runner:
   builder_static_text:
   source_gen:
   build:
   glob:
   recase:
+
+  build_runner:
+  json_serializable:
